@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Pixelographer 3D</title>
+    <link href="https://cdn.jsdelivr.net/npm/beercss@3.7.10/dist/cdn/beer.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css" />
+</head>
+
+<body class="dark" x-data>
+    <dialog class="modal" :class="{'active':$store.glb.loadingDialog}" id="loadingDialog-modal">
+        <h5 x-text="$store.glb.loadingDialogText"></h5>
+    </dialog>
+    <div class="snackbar error top" :class="{'active': $store.glb.errorNotification }" id="error-notification"
+        @click="$store.glb.errorNotification = false">
+        <div class="max" x-text="$store.glb.errorNotificationText"></div>
+        <a class="inverse-link"><i>close</i></a>
+    </div>
+    <div class="snackbar primary top" :class="{'active': $store.glb.timeNotification }" id="time-notification"
+        @click="$store.glb.timeNotification = false">
+        <div class="max" x-text="$store.glb.timeNotificationText"></div>
+        <a class="inverse-link"><i>close</i></a>
+    </div>
+    <div id="container">
+        <div id="wizard" class="fixed left top bottom zindex10 tiny-padding" :class="{'w-100':!$store.glb.step2}"
+            x-cloak>
+            <div id="stepper">
+                <button id="stepper-btn1" class="circle step-btn" @click="$store.glb.setStep(0)"
+                    :class="{'inverse-primary': $store.glb.step0}">
+                    <i class="no-circle">add_photo_alternate</i>
+                    <div class="tooltip right zindex20">
+                        <b>Load Image</b>
+                    </div>
+                </button>
+                <div class="step-line">
+                    <div class="vert"></div>
+                </div>
+                <button id="stepper-btn2" class="circle step-btn" @click="$store.glb.setStep(1)"
+                    :class="{'inverse-primary': $store.glb.step1}" :disabled="$store.step1.cannotMoveTo">
+                    <i class="no-circle">settings</i>
+                    <div class="tooltip right zindex20">
+                        <b>Quantize and Pixelize</b>
+                    </div>
+                </button>
+                <div class="step-line">
+                    <div class="vert"></div>
+                </div>
+                <button id="stepper-btn3" class="circle step-btn" @click="$store.glb.setStep(2)"
+                    :class="{'inverse-primary': $store.glb.step2}" :disabled="$store.step2.cannotMoveTo">
+                    <i class="no-circle">deployed_code_update</i>
+                    <div class="tooltip right zindex20">
+                        <b>Preview & Save STL</b>
+                    </div>
+                </button>
+            </div>
+            <div id="settings"
+                :class="{'justify-start':$store.glb.step0,'justify-center':$store.glb.step1,'justify-end':$store.glb.step2}">
+                <article class="tiny-blur bg-black-opacity30" x-show="$store.glb.step0">
+                    <div class="field label prefix border small no-marginx">
+                        <i>attach_file</i>
+                        <input type="file" accept="image/png, image/jpeg" @change="$store.step0.onChangeImg($event)">
+                        <input type="text">
+                        <label>File</label>
+                    </div>
+                </article>
+                <button class="large" x-show="$store.glb.step1 && $store.step1.needsUpdate"
+                    @click="$store.step1.applyImgOptsChanged()">
+                    <i>refresh</i>
+                    <span>Apply changes</span>
+                </button>
+                <button class="large" x-show="$store.glb.step2 && $store.step2.needsUpdate"
+                    @click="$store.step2.applyModel3DOptsChanged()">
+                    <i>refresh</i>
+                    <span>Apply changes</span>
+                </button>
+                <article class="tiny-blur bg-black-opacity30 scroll" x-show="$store.glb.step1">
+                    <label class="checkbox">
+                        <input type="checkbox" :value="$store.step1.autoRefresh"
+                            @change="$store.step1.autoRefreshChanged($event.target.checked)">
+                        <span>Auto Refresh</span>
+                    </label>
+                    <fieldset>
+                        <legend>Target size in pixels</legend>
+                        <div class="field border label prefix small">
+                            <i>numbers</i>
+                            <input type="number"
+                                @input.debounce.500ms="$store.step1.sizeChanged('width',$event.target.value)"
+                                :value="$store.step1.modifWidth">
+                            <label>Width</label>
+                        </div>
+                        <div class="field border label prefix small">
+                            <i>numbers</i>
+                            <input type="number"
+                                @input.debounce.500ms="$store.step1.sizeChanged('height',$event.target.value)"
+                                :value="$store.step1.modifHeight">
+                            <label>Height</label>
+                            <span class="helper" x-text="$store.step1.sizeInfo"></span>
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <legend>Palette</legend>
+                        <nav class="no-space" id="colors-palette-nav">
+                            <template x-for="(col,idx) in $store.step1.palette">
+                                <button class="circle no-margin palette-circle"
+                                    :style="{'background-color':col,'border-color':$store.glb.inverseColor(col)}"
+                                    @click="$store.step1.paletteSelectedIdx = idx">
+                                    <template x-if="idx == $store.step1.paletteSelectedIdx">
+                                        <i :style="{'color': $store.glb.inverseColor(col)}">check</i>
+                                    </template>
+                                </button>
+                            </template>
+                        </nav>
+                        <nav class="no-space">
+                            <button class="circle small border fill left-round"
+                                x-show="$store.step1.selectedPaletteColor">
+                                <i class="tiny">edit</i>
+                                <input type="color" :value="$store.step1.selectedPaletteColor"
+                                    @change="$store.step1.paletteClick('edit',$event.target.value)">
+                            </button>
+                            <button class="circle small border fill"
+                                :class="$store.step1.selectedPaletteColor ? 'no-round' : ''">
+                                <i class="tiny">add</i>
+                                <input type="color" @change="$store.step1.paletteClick('add',$event.target.value)">
+                            </button>
+                            <button class="circle small border fill right-round"
+                                x-show.important="$store.step1.selectedPaletteColor !== null"
+                                @click="$store.step1.paletteClick('delete')">
+                                <i class="tiny">delete</i>
+                            </button>
+                        </nav>
+                    </fieldset>
+                    <fieldset>
+                        <legend>Quantization Settings</legend>
+                        <div class="field suffix border small">
+                            <select @change="$store.step1.distanceCalcChange($event.target.value)"
+                                :value="$store.step1.distCalcSelected">
+                                <template x-for="dist in $store.step1.distanceCalcs">
+                                    <option x-text="dist"></option>
+                                </template>
+                            </select>
+                            <label>Color Distance Formula</label>
+                            <i>arrow_drop_down</i>
+                        </div>
+                        <div class="field suffix border small">
+                            <select @change="$store.step1.imgQuantAlgoChange($event.target.value)"
+                                :value="$store.step1.imgQuantAlgoSelected">
+                                <template x-for="algo in $store.step1.imgQuantAlgos">
+                                    <option x-text="algo"></option>
+                                </template>
+                            </select>
+                            <label>Quantizer</label>
+                            <i>arrow_drop_down</i>
+                        </div>
+                        <label x-show="Object.keys($store.step1.imgQuantAlgoPars).length > 0"><span
+                                x-text="$store.step1.imgQuantAlgoSelected"></span>&nbsp;quantizer advanced
+                            settings:</label>
+                        <template x-for="param in $store.step1.imgQuantAlgoNumRangePars">
+                            <div class="field middle-align">
+                                <label class="slider">
+                                    <input type="range" :value="$store.step1.imgQuantAlgoPars[param[0]]"
+                                        @input.debounce.500ms="$store.step1.imgQuantAlgoParChange(param[0],$event.target.value)"
+                                        :min="param[1].min" :max="param[1].max">
+                                    <span></span>
+                                    <div class="tooltip"></div>
+                                </label>
+                                <span class="helper" x-text="param[1].caption"></span>
+                            </div>
+                        </template>
+                        <template x-for="param in $store.step1.imgQuantAlgoNumPars">
+                            <div class="field label prefix border small">
+                                <i>numbers</i>
+                                <input type="number" :value="$store.step1.imgQuantAlgoPars[param[0]]"
+                                    @input.debounce.500ms="$store.step1.imgQuantAlgoParChange(param[0],$event.target.value)">
+                                <label x-text="param[1].caption"></label>
+                            </div>
+                        </template>
+                        <template x-for="param in $store.step1.imgQuantAlgoBoolArgs">
+                            <label class="checkbox">
+                                <input type="checkbox" :value="$store.step1.imgQuantAlgoPars[param[0]]"
+                                    @change="$store.step1.imgQuantAlgoParChange(param[0],$event.target.checked)">
+                                <span x-text="param[1].caption"></span>
+                            </label>
+                        </template>
+                    </fieldset>
+                </article>
+                <article class="tiny-blur bg-black-opacity30 scroll" x-show="$store.glb.step2">
+                    <fieldset>
+                        <legend>3D Model Settings</legend>
+                        <div class="field border label prefix small">
+                            <i>numbers</i>
+                            <input type="number"
+                                @input.debounce.500ms="$store.step2.model3DOptsChanged('pixelSideSize',$event.target.value)"
+                                :value="$store.step2.pixelSideSize">
+                            <label>Pixel side size (mm)</label>
+                        </div>
+                        <div class="field border label prefix small">
+                            <i>numbers</i>
+                            <input type="number"
+                                @input.debounce.500ms="$store.step2.model3DOptsChanged('firstLayerHeight',$event.target.value)"
+                                :value="$store.step2.firstLayerHeight">
+                            <label>1st layer height</label>
+                        </div>
+                        <div class="field border label prefix small">
+                            <i>numbers</i>
+                            <input type="number"
+                                @input.debounce.500ms="$store.step2.model3DOptsChanged('otherLayersHeight',$event.target.value)"
+                                :value="$store.step2.otherLayersHeight">
+                            <label>Next layers height</label>
+                        </div>
+                        <div class="field suffix border small">
+                            <select
+                                @change="$store.step2.model3DOptsChanged('paletteSortTypeSelected',$event.target.value)"
+                                :value="$store.step2.paletteSortTypeSelected">
+                                <template x-for="typ,idx in $store.step2.paletteSortTypes">
+                                    <option :value="idx" x-text="typ"></option>
+                                </template>
+                            </select>
+                            <label>Palette Sorting Type</label>
+                            <i>arrow_drop_down</i>
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <legend>Color changes:
+                        </legend>
+                        <aside class="right">
+                            <button class="transparent circle small" @click="$store.step2.copyChanges()">
+                                <i>content_copy</i>
+                            </button>
+                        </aside>
+                        <template x-for="cha in $store.step2.colorChanges">
+                            <div>
+                                <template x-if="cha.idx == 0">
+                                    <div>
+                                        <span class="mr-025 ">Initial color:</span>
+                                        <div class="color-change"
+                                            :style="{'background-color': cha.colCurr,'border-color':$store.glb.inverseColor(cha.colCurr)}">
+                                        </div>
+                                    </div>
+                                </template>
+                                <template x-if="cha.idx > 0">
+                                    <div>
+                                        <span class="mr-025 " x-text="`#${cha.idx} at ${cha.h.toFixed(2)} mm:`"></span>
+                                        <div class="color-change"
+                                            :style="{'background-color': cha.colBefore,'border-color':$store.glb.inverseColor(cha.colBefore)}">
+                                        </div>
+                                        <span><i>arrow_right_alt</i></span>
+                                        <div class="color-change"
+                                            :style="{'background-color': cha.colCurr,'border-color':$store.glb.inverseColor(cha.colCurr)}">
+                                        </div>
+                                    </div>
+                                </template>
+                            </div>
+                        </template>
+                    </fieldset>
+
+                    <button class="responsive small-margin" @click="$store.step2.exportSTLClicked()">
+                        <i>download</i>
+                        <span>Export STL</span>
+                    </button>
+                </article>
+            </div>
+            <div id="img-container" x-show="$store.glb.step1">
+                <img id="img-orig" class="img-preview tiny-padding" alt=" " />
+                <canvas id="img-modif" class="img-preview tiny-padding"></canvas>
+            </div>
+        </div>
+        <canvas id="canvas3D" class="zindex5"></canvas>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/babylonjs@7.42.0/babylon.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/babylonjs-serializers@7.42.0/babylonjs.serializers.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/babylonjs-materials@7.42.0/babylonjs.materials.min.js"></script>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/beercss@3.7.12/dist/cdn/beer.min.js"></script>
+    <script type="module" src="./app.js"></script>
+</body>
+
+</html>
