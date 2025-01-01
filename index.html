@@ -12,7 +12,7 @@
 </head>
 
 <body class="dark" x-data>
-    <dialog class="modal" :class="{'active':$store.glb.loadingDialog}" id="loadingDialog-modal">
+    <dialog class="modal" :class="{'active':$store.glb.loadingDialog}" id="loading-modal">
         <h5 x-text="$store.glb.loadingDialogText"></h5>
     </dialog>
     <div class="snackbar error top" :class="{'active': $store.glb.errorNotification }" id="error-notification"
@@ -57,7 +57,7 @@
                     </div>
                 </button>
             </div>
-            <div id="settings"
+            <div id="settings" x-show="$store.glb.showMenu"
                 :class="{'justify-start':$store.glb.step0,'justify-center':$store.glb.step1,'justify-end':$store.glb.step2}">
                 <article class="tiny-blur bg-black-opacity30" x-show="$store.glb.step0">
                     <div class="field label prefix border small no-marginx">
@@ -266,6 +266,21 @@
             <div id="img-container" x-show="$store.glb.step1">
                 <img id="img-orig" class="img-preview tiny-padding" alt=" " />
                 <canvas id="img-modif" class="img-preview tiny-padding"></canvas>
+            </div>
+            <div id="right-floating-btns" class="fixed right top">
+                <button id="togglemenu-btn" class="circle border right-floating-btn" @click="$store.glb.toggleMenu()">
+                    <i class="no-circle" x-text="$store.glb.showMenu ? 'left_panel_close' : 'left_panel_open'"></i>
+                    <div class="tooltip left zindex20">
+                        <b>Toggle menu</b>
+                    </div>
+                </button>
+                <a id="help-btn" class="circle border button right-floating-btn"
+                    href="https://github.com/digEmAll/pixelographer-3D" target="_blank" rel="noopener noreferrer">
+                    <i class="no-circle">help</i>
+                    <div class="tooltip left zindex20">
+                        <b>Help & source code</b>
+                    </div>
+                </a>
             </div>
         </div>
         <canvas id="canvas3D" class="zindex5"></canvas>

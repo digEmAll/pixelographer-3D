@@ -1,10 +1,15 @@
 export class CanvasDrawer {
+    static FORCE_CANVAS_RESIZE_EVENT = "force-canvas-resize";
+
     constructor(canvasDOM) {
         this.imgBitmap = null;
         this.canvas = canvasDOM;
         window.addEventListener("resize", () => {
             this.redraw();
         });
+        window.addEventListener(CanvasDrawer.FORCE_CANVAS_RESIZE_EVENT, () => {
+            this.redraw();
+        })
     }
     // fit a rect into some container, keeping the aspect ratio of the rect
     fitRectIntoContainer(rectWidth, rectHeight, containerWidth, containerHeight) {

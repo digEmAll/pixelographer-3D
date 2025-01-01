@@ -26,6 +26,7 @@ function initGlbStore() {
         errorNotificationText: "Error",
         timeNotification: false,
         timeNotificationText: "...",
+        showMenu: true,
         get step0() {
             return this.wizstep == 0;
         },
@@ -66,6 +67,11 @@ function initGlbStore() {
                 return null;
             }
             return Utils.invertColor(col);
+        },
+        toggleMenu() {
+            this.showMenu = !this.showMenu;
+            // onNextTick does not seem to work well, so we use the good old setTimeout...
+            setTimeout(() => window.dispatchEvent(new Event(CanvasDrawer.FORCE_CANVAS_RESIZE_EVENT)), 200)
         },
     })
 }

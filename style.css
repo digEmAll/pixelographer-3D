@@ -80,6 +80,20 @@ body {
     flex-grow: 0;
 }
 
+#right-floating-btns {
+    background-color: transparent;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    flex-grow: 0;
+    flex-shrink: 0;
+}
+
+.right-floating-btn {
+    flex-grow: 0;
+    border: none !important;
+}
+
 .step-line {
     flex-grow: 1;
     display: flex;
