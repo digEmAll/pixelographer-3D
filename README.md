@@ -22,3 +22,10 @@ See the following picture for an "animated" example:
 
 ![Instructions](imgs/instructions.gif?raw=true "Instructions")
 
+# Credits
+
+Many thanks to the creator of the following libraries:
+- [image-quantization](https://github.com/ibezkrovnyi/image-quantization)
+- [babylon.js](https://github.com/BabylonJS/Babylon.js)
+- [beerc.ss](https://github.com/beercss/beercss)
+- [alpine.js](https://github.com/alpinejs/alpine)
