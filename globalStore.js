@@ -4,12 +4,12 @@ import { CanvasDrawer } from "./canvasDrawer.js";
 import * as Utils from "./utils.js";
 import * as Model3D from "./model3d.js";
 
-const INITIAL_MAX_WH = 400;
+const INITIAL_MAX_WH = 250;
 const INITIAL_PALETTE = ["#000000", "#cc0002", "#0f52ba", "#f7c500", "#ffc6a9", "#fffbf6"];
 const INITIAL_IMG_QUANT_ALGO = Object.keys(ImgHandler.imgQuantizationsMap)[0];
 const INITIAL_DISTANCE_CALC = ImgHandler.distanceMethods[0];
-const INITIAL_PIXEL_SIZE = 1.4;
-const INITIAL_FIRST_LAYER_HEIGHT = 1.0;
+const INITIAL_PIXEL_SIZE = 1.0;
+const INITIAL_FIRST_LAYER_HEIGHT = 0.8;
 const INITIAL_OTHER_LAYERS_HEIGHT = 0.2;
 const INITIAL_PALETTE_SORT_TYPE = 0;
 
@@ -328,6 +328,17 @@ function initStep2Store() {
             }
             return changes;
         },
+        get finalSize() {
+            let img = Alpine.store("glb").modifImg;
+            let changes = this.colorChanges;
+            if (img == null || changes.length == 0) {
+                return "";
+            }
+            let w = (this.pixelSideSize * img.getWidth()).toFixed(2);
+            let h = (this.pixelSideSize * img.getHeight()).toFixed(2);
+            let d = (changes[changes.length - 1].h).toFixed(2);
+            return `${w} x ${h} x ${d}`
+        },
         enterStep() {
             this.applyModel3DOptsChanged();
         },
@@ -362,13 +373,14 @@ function initStep2Store() {
                 if (change.idx == 0) {
                     msg += `Initial color: ${change.colCurr}`;
                 } else {
-                    msg += `Color change #${change.idx}: ${change.colBefore} --> ${change.colCurr}`
+                    msg += `from ${change.h.toFixed(2)} mm, change color: ${change.colBefore} --> ${change.colCurr}`
                 }
                 msg += "\n";
             }
             navigator.clipboard.writeText(msg);
             Alpine.store("glb").showTimeNotification("Color changes information copied to clipboard !", 2000);
-        }
+        },
+
     })
 }
 

@@ -202,14 +202,14 @@
                             <input type="number"
                                 @input.debounce.500ms="$store.step2.model3DOptsChanged('firstLayerHeight',$event.target.value)"
                                 :value="$store.step2.firstLayerHeight">
-                            <label>1st layer height</label>
+                            <label>1st layer height (mm)</label>
                         </div>
                         <div class="field border label prefix small">
                             <i>numbers</i>
                             <input type="number"
                                 @input.debounce.500ms="$store.step2.model3DOptsChanged('otherLayersHeight',$event.target.value)"
                                 :value="$store.step2.otherLayersHeight">
-                            <label>Next layers height</label>
+                            <label>Next layers height (mm)</label>
                         </div>
                         <div class="field suffix border small">
                             <select
@@ -224,8 +224,11 @@
                         </div>
                     </fieldset>
                     <fieldset>
-                        <legend>Color changes:
-                        </legend>
+                        <legend>Final model size (mm):</legend>
+                        <div x-text="$store.step2.finalSize"></div>
+                    </fieldset>
+                    <fieldset>
+                        <legend>Color changes:</legend>
                         <aside class="right">
                             <button class="transparent circle small" @click="$store.step2.copyChanges()">
                                 <i>content_copy</i>
