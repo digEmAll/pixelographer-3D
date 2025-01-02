@@ -1,20 +1,24 @@
 # pixelographer-3D
 
-A browser-only (no backend) web application to turn images into pixelized 3D models, that can be printed in multicolor using an FDM.
+A browser-based web application (with no backend) that transforms images into pixelated 3D models, which can be printed in multicolor using a FDM printer.
 
 # How it works
 
-The web application allows you to upload an image, scale it and reduce its colors to a certain customizable palette (using dithering algorithms); than each pixel will be drawn at different height according to the colors and turned into a downloadable 3D model (in STL format).
-With a 3D FDM printer you can slice the model, set the manual/automatic color changes in the slicer and that's it!
+The web application allows users to upload an image, scale it, and reduce its colors to a customizable palette using dithering algorithms.
+Each pixel is rendered at different height according to its color, resulting in a downloadable 3D model in STL format.
+With a 3D FDM printer ,you can slice the model, set the manual or automatic color changes in the slicer, making it ready for printing!
 
 # Usage
 
-This web-application is browser-only (there is no backend, the uploaded images are stored temporarily on your browser) and directly hosted on github page: https://digemall.github.io/pixelographer-3D/
+This application is hosted on this repository github page: https://digemall.github.io/pixelographer-3D/
 
-## Instructions
+# Instructions
 
 - Upload an image
 - Play with scale and dithering settings
 - Play with 3D model settings and download the STL
 
+See the following picture for an "animated" example:
+
+![Instructions](imgs/instructions.gif?raw=true "Instructions")
 
