@@ -75,10 +75,10 @@ function getDistanceCalculator(opts) {
 
 function getImgQuantizer(opts, distanceCalculator) {
     const arrayDiffusionAlgos = {
+        "atkinson": image.ErrorDiffusionArrayKernel.Atkinson,
         "floyd-steinberg": image.ErrorDiffusionArrayKernel.FloydSteinberg,
         "false-floyd-steinberg": image.ErrorDiffusionArrayKernel.FalseFloydSteinberg,
         "stucki": image.ErrorDiffusionArrayKernel.Stucki,
-        "atkinson": image.ErrorDiffusionArrayKernel.Atkinson,
         "jarvis": image.ErrorDiffusionArrayKernel.Jarvis,
         "burkes": image.ErrorDiffusionArrayKernel.Burkes,
         "sierra": image.ErrorDiffusionArrayKernel.Sierra,
