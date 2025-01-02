@@ -24,7 +24,7 @@ See the following picture for an "animated" example:
 
 # Credits
 
-Many thanks to the creator of the following libraries:
+Many thanks to the creators of the following libraries:
 - [image-quantization](https://github.com/ibezkrovnyi/image-quantization)
 - [babylon.js](https://github.com/BabylonJS/Babylon.js)
 - [beerc.ss](https://github.com/beercss/beercss)
