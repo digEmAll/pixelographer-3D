@@ -218,11 +218,12 @@ function resetCamera() {
 //   uint32
 //   getLuminosity()
 export async function updateModel(img, opts) {
-    // N.B.: these operations have been split with several (promisified) setTimeout, to allow minimal UI updates while computing
-    await Utils.promiseSetZeroTimeout(() => {
+    // N.B.: these operations have been split with several (promisified) setTimeout, 
+    //       to allow minimal UI updates while computing
+    await Utils.promiseSetTimeout(() => {
         clearModel();
     });
-    let sortedReducedPalette = await Utils.promiseSetZeroTimeout(() => {
+    let sortedReducedPalette = await Utils.promiseSetTimeout(() => {
         // sort palette and reduce it to the actual used colors
         let pal = sortPalette(opts.paletteSortType, opts.palette);
         pal = reducePalette(img, pal);
@@ -230,11 +231,11 @@ export async function updateModel(img, opts) {
     });
 
     let manifoldPosContainer = new PositionsContainer();
-    await Utils.promiseSetZeroTimeout(() => {
+    await Utils.promiseSetTimeout(() => {
         iterateOnFacets(img, opts, sortedReducedPalette, (x1, y1, z1, x2, y2, z2, perpAxis, direction) => addRectFacet(manifoldPosContainer, x1, y1, z1, x2, y2, z2, perpAxis, direction));
     });
 
-    let material = await Utils.promiseSetZeroTimeout(() => {
+    let material = await Utils.promiseSetTimeout(() => {
         const paletteCol3 = sortedReducedPalette.map(x => new BABYLON.Color3(x.r / 255, x.g / 255, x.b / 255));
         let thresholds = [opts.firstLayerHeight, ...Array(sortedReducedPalette.length - 2).fill(opts.otherLayersHeight)]
         thresholds = thresholds.map((sum => value => sum += value)(0));
@@ -242,7 +243,7 @@ export async function updateModel(img, opts) {
         return mat;
     });
 
-    await Utils.promiseSetZeroTimeout(() => {
+    await Utils.promiseSetTimeout(() => {
         const customMesh = manifoldPosContainer.getCustomMesh(IMG_MODEL_MESH_NAME, scene, material);
         customMesh.isVisible = true;
         camera.setTarget(customMesh)
@@ -538,8 +539,8 @@ function createAndBuildMaterialNode(scene, palette, heightsThresholds) {
 
 export async function exportSTL() {
     // 250ms delay to allow DOM rendering
-    await Utils.promiseSetZeroTimeout(() => { }, 250);
-    await Utils.promiseSetZeroTimeout(() => {
+    await Utils.promiseSetTimeout(() => { }, 100);
+    await Utils.promiseSetTimeout(() => {
         BABYLON.STLExport.CreateSTL(
             scene.meshes.filter(x => x.name == IMG_MODEL_MESH_NAME),
             true,

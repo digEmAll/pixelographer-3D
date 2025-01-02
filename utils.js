@@ -50,7 +50,7 @@ export function arrayRemoveIf(arr, condition) {
 
 // wrap operation in a promisified setTimeout(xxx,0) allowing the browser to
 // execute UI updates between one or more of these operations
-export async function promiseSetZeroTimeout(operation, timeout=0) {
+export async function promiseSetTimeout(operation, timeout=0) {
     return new Promise((res) => {
         setTimeout(() => {
             res(operation());

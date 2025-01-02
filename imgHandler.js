@@ -2,11 +2,11 @@
 // https://github.com/ibezkrovnyi/image-quantization
 import {
     utils,
-    applyPalette,
-    buildPalette,
     image,
     distance
 } from "https://cdn.jsdelivr.net/npm/image-q@4.0.0/dist/esm/image-q.mjs";
+
+import * as Utils from "./utils.js";
 
 export function createImgObjURLOrNull(file) {
     if (!file) {
@@ -110,7 +110,8 @@ export async function showModifImg(canvasDrawer, origImg, opts) {
     const imageQuantizer = getImgQuantizer(opts, distanceCalculator);
     // perform quantization & dithering
     const outPointCont = imageQuantizer.quantizeSync(pointCont, palette);
-    canvasDrawer.setImageBitmap(await pointContainerToImgBitmap(outPointCont));
+    let bitmap = await pointContainerToImgBitmap(outPointCont);
+    Utils.promiseSetTimeout(() => canvasDrawer.setImageBitmap(bitmap), 50);
     return outPointCont;
 }
 
