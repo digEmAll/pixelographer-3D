@@ -159,14 +159,14 @@ export const distanceMethods = [
 const ditherArrayArgs = {
     serpentine: { type: "bool", default: true, caption: "Serpentine" },
     minimumColorDistanceToDither: { type: "numrange", min: 0, max: 100, default: 0, caption: "Min.color distance to dither" },
-    calculateErrorLikeGIMP: { type: "bool", default: true, caption: "Calculate error like GIMP" }
+    calculateErrorLikeGIMP: { type: "bool", default: false, caption: "Calculate error like GIMP" }
 };
 
 export const imgQuantizationsMap = {
+    "atkinson": ditherArrayArgs,
     "floyd-steinberg": ditherArrayArgs,
     "false-floyd-steinberg": ditherArrayArgs,
     "stucki": ditherArrayArgs,
-    "atkinson": ditherArrayArgs,
     "jarvis": ditherArrayArgs,
     "burkes": ditherArrayArgs,
     "sierra": ditherArrayArgs,
