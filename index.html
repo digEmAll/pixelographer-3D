@@ -62,21 +62,12 @@
                 <article class="tiny-blur bg-black-opacity30" x-show="$store.glb.step0">
                     <div class="field label prefix border small no-marginx">
                         <i>attach_file</i>
-                        <input type="file" accept="image/png, image/jpeg" @change="$store.step0.onChangeImg($event)">
+                        <input type="file" accept="image/png, image/jpeg" autocomplete="off"
+                            @change="$store.step0.onChangeImg($event)">
                         <input type="text">
                         <label>File</label>
                     </div>
                 </article>
-                <button class="large" x-show="$store.glb.step1 && $store.step1.needsUpdate"
-                    @click="$store.step1.applyImgOptsChanged()">
-                    <i>refresh</i>
-                    <span>Apply changes</span>
-                </button>
-                <button class="large" x-show="$store.glb.step2 && $store.step2.needsUpdate"
-                    @click="$store.step2.applyModel3DOptsChanged()">
-                    <i>refresh</i>
-                    <span>Apply changes</span>
-                </button>
                 <article class="tiny-blur bg-black-opacity30 scroll" x-show="$store.glb.step1">
                     <label class="checkbox">
                         <input type="checkbox" :value="$store.step1.autoRefresh"
@@ -223,17 +214,17 @@
                             <i>arrow_drop_down</i>
                         </div>
                     </fieldset>
-                    <fieldset>
-                        <legend>Final model size (mm):</legend>
-                        <div x-text="$store.step2.finalSize"></div>
-                    </fieldset>
-                    <fieldset>
-                        <legend>Color changes:</legend>
+                    <fieldset x-show="$store.step2.isDownloadable">
+                        <legend>STL info & download:</legend>
                         <aside class="right">
-                            <button class="transparent circle small" @click="$store.step2.copyChanges()">
+                            <button class="transparent circle small" @click="$store.step2.copyModelInfo()">
                                 <i>content_copy</i>
                             </button>
                         </aside>
+                        <div class="bold">Model size (mm):</div>
+                        <div x-text="$store.step2.finalSizeStr"></div>
+                        <div class="tiny-padding"></div>
+                        <div class="bold">Color changes:</div>
                         <template x-for="cha in $store.step2.colorChanges">
                             <div>
                                 <template x-if="cha.idx == 0">
@@ -258,17 +249,23 @@
                                 </template>
                             </div>
                         </template>
+                        <button class="responsive small-margin" @click="$store.step2.exportSTLClicked()">
+                            <i>download</i>
+                            <span>Download STL</span>
+                        </button>
                     </fieldset>
-
-                    <button class="responsive small-margin" @click="$store.step2.exportSTLClicked()">
-                        <i>download</i>
-                        <span>Export STL</span>
-                    </button>
                 </article>
             </div>
             <div id="img-container" x-show="$store.glb.step1">
-                <img id="img-orig" class="img-preview tiny-padding" alt=" " />
-                <canvas id="img-modif" class="img-preview tiny-padding"></canvas>
+                <img id="img-orig" class="img-preview img-half tiny-padding" alt=" " />
+                <div class="img-half tiny-padding">
+                    <canvas id="img-modif" class="w-100 h-100"></canvas>
+                    <button class="large absolute-centered" x-show="$store.glb.step1 && $store.step1.needsUpdate"
+                        @click="$store.step1.applyImgOptsChanged()">
+                        <i>refresh</i>
+                        <span>Update image</span>
+                    </button>
+                </div>
             </div>
             <div id="right-floating-btns" class="fixed right top">
                 <button id="togglemenu-btn" class="circle border right-floating-btn" @click="$store.glb.toggleMenu()">
@@ -286,7 +283,14 @@
                 </a>
             </div>
         </div>
-        <canvas id="canvas3D" class="zindex5"></canvas>
+        <div class="w-100 h-100" class="zindex5">
+            <canvas id="canvas3D"></canvas>
+            <button class="large fixed-centered" x-cloak x-show="$store.glb.step2 && $store.step2.needsUpdate"
+                @click="$store.step2.applyModel3DOptsChanged()">
+                <i>refresh</i>
+                <span>Update 3D model</span>
+            </button>
+        </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/babylonjs@7.42.0/babylon.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/babylonjs-serializers@7.42.0/babylonjs.serializers.min.js"></script>

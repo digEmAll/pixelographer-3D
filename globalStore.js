@@ -201,6 +201,7 @@ function initStep1Store() {
                 this.applyImgOptsChanged();
             } else {
                 this.needsUpdate = true;
+                this.clearModifImage();
             }
         },
         applyImgOptsChanged() {
@@ -331,23 +332,36 @@ function initStep2Store() {
         get finalSize() {
             let img = Alpine.store("glb").modifImg;
             let changes = this.colorChanges;
-            if (img == null || changes.length == 0) {
+            if (img == null || changes == null || changes.length == 0) {
+                return null;
+            }
+            let w = this.pixelSideSize * img.getWidth();
+            let h = this.pixelSideSize * img.getHeight();
+            let d = changes[changes.length - 1].h
+            return { w, h, d }
+        },
+        get isDownloadable() {
+            return this.finalSize != null;
+        },
+        get finalSizeStr() {
+            let size = this.finalSize
+            if (size == null) {
                 return "";
             }
-            let w = (this.pixelSideSize * img.getWidth()).toFixed(2);
-            let h = (this.pixelSideSize * img.getHeight()).toFixed(2);
-            let d = (changes[changes.length - 1].h).toFixed(2);
-            return `${w} x ${h} x ${d}`
+            let { w, h, d } = size;
+            return `${w.toFixed(2)} x ${h.toFixed(2)} x ${d.toFixed(2)}`
         },
         enterStep() {
             this.applyModel3DOptsChanged();
         },
         clearModel() {
+            this.appliedPalette = [];
             Model3D.clearModel();
         },
         model3DOptsChanged(what, value) {
             this[what] = parseFloat(value);
             this.needsUpdate = true;
+            this.clearModel();
         },
         applyModel3DOptsChanged() {
             this.appliedPalette = null;
@@ -367,18 +381,23 @@ function initStep2Store() {
                 Model3D.exportSTL().finally(() => { Alpine.store("glb").hideLoadingDialog() });
             });
         },
-        copyChanges() {
+        copyModelInfo() {
             let msg = "";
+            msg += "Final model size (mm):\n";
+            msg += "  ";
+            msg += this.finalSizeStr;
+            msg += "\n\n";
+            msg += "Color changes: \n";
             for (let change of this.colorChanges) {
                 if (change.idx == 0) {
-                    msg += `Initial color: ${change.colCurr}`;
+                    msg += `  initial color: ${change.colCurr}`;
                 } else {
-                    msg += `from ${change.h.toFixed(2)} mm, change color: ${change.colBefore} --> ${change.colCurr}`
+                    msg += `  #${change.idx} at ${change.h.toFixed(2)} mm: ${change.colBefore} --> ${change.colCurr}`
                 }
                 msg += "\n";
             }
             navigator.clipboard.writeText(msg);
-            Alpine.store("glb").showTimeNotification("Color changes information copied to clipboard !", 2000);
+            Alpine.store("glb").showTimeNotification("Model info copied to clipboard !", 2000);
         },
 
     })
