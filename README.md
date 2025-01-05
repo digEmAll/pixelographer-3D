@@ -4,9 +4,8 @@ A browser-based web application (with no backend) that transforms images into pi
 
 # How it works
 
-The web application allows users to upload an image, scale it, and reduce its colors to a customizable palette using dithering algorithms.
-Each pixel is rendered at different height according to its color, resulting in a downloadable 3D model in STL format.
-With a 3D FDM printer ,you can slice the model, set the manual or automatic color changes in the slicer, making it ready for printing!
+With this web application you can upload an image, scale it, and reduce its colors to a customizable palette using dithering algorithms.  
+Each pixel is rendered in 3D at different height according to its color, resulting in a downloadable 3D model in STL format.  
 
 # Usage
 
@@ -21,6 +20,17 @@ This application is hosted on this repository github page: https://digemall.gith
 See the following picture for an "animated" example:
 
 ![Instructions](imgs/instructions.gif?raw=true "Instructions")
+
+## Model Slicing
+
+Slice the STL file as usual in your slicer and then set the layer heights where color changes should happen as indicated in the application.  
+
+Automatic filament switching units are not strictly necessary; the models are designed to work well with manual changes, since each layer has a single color. 
+
+See the following gif for an example in prusa-slicer 2.9:
+
+![Instructions](imgs/colors_in_slicer.gif?raw=true "Instructions")
+
 
 # Credits
 
