@@ -1,6 +1,6 @@
 # pixelographer-3D
 
-A browser-based web application (with no backend) that transforms images into pixelated 3D models, which can be printed in multicolor using a FDM printer.
+A browser-based web application (with no backend) to turn images into pixelated 3D models, which can be printed in multicolor using a FDM printer.
 
 # How it works
 
@@ -23,7 +23,7 @@ See the following picture for an "animated" example:
 
 ## Model Slicing
 
-Slice the STL file as usual in your slicer and then set the layer heights where color changes should happen as indicated in the application.  
+Slice the STL file as usual in your slicer, then configure the color changes at the indicated layer heights.  
 
 Automatic filament switching units are not strictly necessary; the models are designed to work well with manual changes, since each layer has a single color. 
 
